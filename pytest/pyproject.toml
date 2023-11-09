@@ -1,0 +1,23 @@
+[project]
+name = "main"
+version = "0.0.0"
+
+[tool.poetry]
+name = "Pytest"
+version = "0.2.0"
+description = "Pytest Dagger module"
+authors = ["Mjb141"]
+packages = [{ include = "main.py", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.3"
+
+[tool.poetry.group.dev.dependencies]
+dagger-io = { path = "./sdk", develop = true }
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
