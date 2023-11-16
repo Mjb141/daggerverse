@@ -34,12 +34,12 @@ class PytestMod:
         )
 
     @function
-    async def with_poetry(self):
+    async def with_poetry(self) -> "PytestMod":
         self.dependency_commands = [["poetry", "install"]]
         return self
 
     @function
-    async def with_pip(self, requirements_files: str):
+    async def with_pip(self, requirements_files: str) -> "PytestMod":
         self.is_pip = True
         self.dependency_commands = build_requirements_pip_commands(
             requirements_files, None
@@ -47,9 +47,10 @@ class PytestMod:
         return self
 
     @function
-    async def test(self, src_dir: dagger.Directory, tests_dir: str):
-        await (
+    async def test(self, src_dir: dagger.Directory, tests_dir: str) -> str:
+        return await (
             self.container.with_mounted_directory("/src", src_dir)
             .with_exec(self.dependency_commands)
             .with_exec(["pytest", tests_dir])
+            .stdout()
         )
