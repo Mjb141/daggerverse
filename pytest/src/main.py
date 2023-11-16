@@ -34,12 +34,12 @@ class PytestMod:
         )
 
     @function
-    async def with_poetry(self) -> "PytestMod":
+    def with_poetry(self) -> "PytestMod":
         self.dependency_commands = [["poetry", "install"]]
         return self
 
     @function
-    async def with_pip(self, requirements_files: str) -> "PytestMod":
+    def with_pip(self, requirements_files: str) -> "PytestMod":
         self.is_pip = True
         self.dependency_commands = build_requirements_pip_commands(
             requirements_files, None
