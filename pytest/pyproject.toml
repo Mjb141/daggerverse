@@ -3,7 +3,7 @@ name = "main"
 version = "0.0.0"
 
 [tool.poetry]
-name = "Pytest Module"
+name = "pytest-mod"
 version = "0.2.0"
 description = "Pytest Dagger module"
 authors = ["Mjb141"]
