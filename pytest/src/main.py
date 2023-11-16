@@ -48,9 +48,15 @@ class PytestMod:
 
     @function
     async def test(self, src_dir: dagger.Directory, tests_dir: str) -> str:
-        return await (
-            self.container.with_mounted_directory("/src", src_dir)
-            .with_exec(self.dependency_commands)
-            .with_exec(["pytest", tests_dir])
-            .stdout()
+        self.dependency_commands = (
+            [["poetry", "install"]]
+            if self.dependency_commands is None
+            else self.dependency_commands
         )
+
+        container = self.container().with_mounted_directory("/src", src_dir)
+
+        for dependency_command in self.dependency_commands:
+            container = container.with_exec(dependency_command)
+
+        return await container.with_exec(["pytest", tests_dir]).stdout()
