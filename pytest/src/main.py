@@ -16,7 +16,7 @@ def build_requirements_pip_commands(
 
 
 @object_type
-class Pytest:
+class PytestMod:
     """This is a Pytest class in a module"""
 
     is_pip: bool = False
