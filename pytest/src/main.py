@@ -1,5 +1,5 @@
 import dagger
-from dagger.mod import function, object_type, field
+from dagger.mod import function, object_type
 
 BASE_PIP_COMMAND: list[str] = ["pip3", "install", "-r"]
 
@@ -57,6 +57,6 @@ class PytestMod:
         container = self.container().with_mounted_directory("/src", src_dir)
 
         for dependency_command in self.dependency_commands:
-            container = container.with_exec(dependency_command, skip_entrypoint=True)
+            container = container.with_exec(dependency_command)
 
         return await container.with_exec(["pytest", tests_dir]).stdout()
