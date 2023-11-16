@@ -47,7 +47,7 @@ class PytestMod:
         return self
 
     @function
-    async def test(self, src_dir: dagger.Directory, tests_dir: str) -> str:
+    async def test(self, src_dir: dagger.Directory, tests_dir: str) -> dagger.Container:
         self.dependency_commands = (
             [["poetry", "install"]]
             if self.dependency_commands is None
@@ -59,4 +59,4 @@ class PytestMod:
         for dependency_command in self.dependency_commands:
             container = container.with_exec(dependency_command)
 
-        return await container.with_exec(["pytest", tests_dir]).stdout()
+        return await container.with_exec(["pytest", tests_dir])
