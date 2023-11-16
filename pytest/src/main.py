@@ -1,13 +1,5 @@
-from typing import Annotated
 import dagger
-from dagger.mod import function
-
-ANNOTATION_SRC_DIR = "The source directory, relative to your current directory"
-ANNOTATION_TESTS_DIR = "The tests directory, relative to the 'src-dir'"
-ANNOTATION_REQUIREMENTS_FILES = (
-    "A comma-separated list of requirements files, relative to the 'tests-dir'"
-)
-ANNOTATION_PIP_ARGS = "Additional arguments to pass to the 'pip3 install' commands"
+from dagger.mod import function, object_type
 
 BASE_PIP_COMMAND: list[str] = ["pip3", "install", "-r"]
 
@@ -23,42 +15,41 @@ def build_requirements_pip_commands(
     ]
 
 
-@function
-async def pytest_with_pip(
-    src_dir: Annotated[dagger.Directory, ANNOTATION_SRC_DIR],
-    tests_dir: Annotated[str, ANNOTATION_TESTS_DIR],
-    requirements_files: Annotated[str, ANNOTATION_REQUIREMENTS_FILES],
-    pip_args: Annotated[str | None, ANNOTATION_PIP_ARGS] = None,
-) -> str:
-    container = (
-        dagger.container()
-        .from_("python:3.12-slim")
-        .with_mounted_directory("/src", src_dir)
-        .with_workdir("/src")
-    )
+@object_type
+class Pytest:
+    """This is a Pytest class in a module"""
 
-    dependency_file_pip_commands = build_requirements_pip_commands(
-        requirements_files, pip_args
-    )
+    is_pip: bool = False
+    dependency_commands: list[list[str]] = []
 
-    for pip_command in dependency_file_pip_commands:
-        container = container.with_exec(pip_command)
+    def container(self) -> dagger.Container:
+        entrypoint = ["pytest"] if self.is_pip else ["poetry", "run"]
 
-    return await container.with_exec(["pytest", tests_dir]).stdout()
+        return (
+            dagger.container()
+            .from_("mikebrown008/cgr-poetry:0.1.4")
+            .with_workdir("/src")
+            .with_user("root")
+            .with_entrypoint(entrypoint)
+        )
 
+    @function
+    async def with_poetry(self):
+        self.dependency_commands = [["poetry", "install"]]
+        return
 
-@function
-async def pytest_with_poetry(
-    src_dir: Annotated[dagger.Directory, ANNOTATION_SRC_DIR],
-    tests_dir: Annotated[str, ANNOTATION_TESTS_DIR],
-) -> str:
-    return (
-        await dagger.container()
-        .from_("mikebrown008/cgr-poetry:0.1.4")
-        .with_mounted_directory("/src", src_dir)
-        .with_workdir("/src")
-        .with_user("root")
-        .with_exec(["poetry", "install"], skip_entrypoint=True)
-        .with_exec(["poetry", "run", "pytest", "-v", tests_dir], skip_entrypoint=True)
-        .stdout()
-    )
+    @function
+    async def with_pip(self, requirements_files: str):
+        self.is_pip = True
+        self.dependency_commands = build_requirements_pip_commands(
+            requirements_files, None
+        )
+        return
+
+    @function
+    async def test(self, src_dir: dagger.Directory, tests_dir: str):
+        await (
+            self.container.with_mounted_directory("/src", src_dir)
+            .with_exec(self.dependency_commands)
+            .with_exec(["pytest", tests_dir])
+        )
