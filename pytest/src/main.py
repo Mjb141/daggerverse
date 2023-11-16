@@ -23,7 +23,7 @@ class PytestMod:
     dependency_commands: list[list[str]] | None = None
 
     def container(self) -> dagger.Container:
-        entrypoint = [""] if self.is_pip else ["poetry", "run"]
+        entrypoint = [] if self.is_pip else ["poetry", "run"]
 
         return (
             dagger.container()
