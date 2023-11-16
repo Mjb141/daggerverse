@@ -5,12 +5,16 @@ To call this module (in a directory with a python app + pytests):
 
 * `dagger call -m "github.com/mjb141/daggerverse/pytest@main" --help`
 
-## WIP
+## Demonstration commands
 
-## Commits
+#### Simple functions (first iteration)
 
-Stage 1 (single methods, pytest-with-pip, pytest-with-poetry): 
-  - Commit 73c1a5b8816f9102f85779ce42b11e39f8e6d124
+* Pip: `dagger call -m "github.com/mjb141/daggerverse/pytest@simple" pytest-with-pip --src-dir . --tests-dir tests --requirements-files requirements.txt`
 
-Stage 2 (with-* methods, universal test method):
-  - Commit 3f1b867b1e175b4ed91e4b47381885069e356a6b
+* Poetry: `dagger call -m "github.com/mjb141/daggerverse/pytest@simple" pytest-with-poetry --src-dir . --tests-dir tests`
+
+#### Chained functions (second iteration)
+
+* Pip: `dagger call -m "github.com/mjb141/daggerverse/pytest@chained-methods" with-pip --requirements-files requirements.txt test --src-dir . --tests-dir tests`
+
+* Poetry: `dagger call -m "github.com/mjb141/daggerverse/pytest@chained-methods" with-poetry test --src-dir . --tests-dir tests`
