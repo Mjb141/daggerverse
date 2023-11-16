@@ -20,7 +20,7 @@ class PytestMod:
     """This is a Pytest class in a module"""
 
     is_pip: bool = False
-    dependency_commands: list[list[str]] = field(default=[])
+    dependency_commands: list[list[str]] | None = None
 
     def container(self) -> dagger.Container:
         entrypoint = ["pytest"] if self.is_pip else ["poetry", "run"]
