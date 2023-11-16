@@ -1,5 +1,5 @@
 import dagger
-from dagger.mod import function, object_type
+from dagger.mod import function, object_type, field
 
 BASE_PIP_COMMAND: list[str] = ["pip3", "install", "-r"]
 
@@ -20,7 +20,7 @@ class Pytest:
     """This is a Pytest class in a module"""
 
     is_pip: bool = False
-    dependency_commands: list[list[str]] = []
+    dependency_commands: list[list[str]] = field()
 
     def container(self) -> dagger.Container:
         entrypoint = ["pytest"] if self.is_pip else ["poetry", "run"]
