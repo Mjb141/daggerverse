@@ -36,7 +36,7 @@ class PytestMod:
     @function
     async def with_poetry(self):
         self.dependency_commands = [["poetry", "install"]]
-        return
+        return self
 
     @function
     async def with_pip(self, requirements_files: str):
@@ -44,7 +44,7 @@ class PytestMod:
         self.dependency_commands = build_requirements_pip_commands(
             requirements_files, None
         )
-        return
+        return self
 
     @function
     async def test(self, src_dir: dagger.Directory, tests_dir: str):
