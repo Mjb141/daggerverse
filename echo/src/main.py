@@ -19,11 +19,13 @@ class EchoMod:
         env: str = "dev",
         path: str = "/",
     ) -> "EchoMod":
+        """Fetch a secret from Infisical"""
         self.secret = dagger.Infisical().get_secret(name, token, env, path)
         return self
 
     @function
-    async def echo(self, word: str) -> dagger.Container:
+    async def echo(self, word: str = "Hello") -> dagger.Container:
+        """Echo a provided 'word' or a secret fetched prior"""
         if self.secret is None:
             return self.container().with_exec(["echo", f"Here's a word... {word}"])
 
