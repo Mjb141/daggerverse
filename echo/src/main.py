@@ -1,4 +1,3 @@
-from typing import ContextManager
 import dagger
 from dagger.mod import function, object_type
 
@@ -20,7 +19,6 @@ class EchoMod:
         env: str = "dev",
         path: str = "/",
     ) -> "EchoMod":
-        context = ContextManager.mro()
         self.secret = dagger.Infisical().get_secret(name, token, env, path)
         return self
 
