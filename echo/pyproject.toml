@@ -1,11 +1,7 @@
-[project]
-name = "main"
-version = "0.0.0"
-
 [tool.poetry]
-name = "CDK"
+name = "echo-mod"
 version = "0.1.0"
-description = "CDK Dagger module"
+description = "Echo Dagger module"
 authors = ["Mjb141"]
 packages = [{ include = "main.py", from = "src" }]
 
