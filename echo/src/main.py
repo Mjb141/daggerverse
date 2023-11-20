@@ -20,7 +20,7 @@ class EchoMod:
         path: str = "/",
     ) -> "EchoMod":
         """Fetch a secret from Infisical"""
-        self.secret = dagger.Infisical().get_secret(name, token, env, path)
+        self.secret = dagger.infisical().get_secret(name, token, env, path)
         return self
 
     @function
