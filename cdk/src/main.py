@@ -94,6 +94,6 @@ class CdkMod:
             .with_secret_variable("AWS_SESSION_TOKEN", self.aws_session_token)
             .with_env_variable("CDK_DEFAULT_REGION", self.region)
             .with_env_variable("CDK_DEFAULT_ACCOUNT", self.account)
-            .with_exec(["npm", "ci"])
-            .with_exec(["npm", "run", "cdk", "deploy"])
+            # .with_exec(["npm", "ci"])
+            # .with_exec(["npm", "run", "cdk", "deploy"])
         )
