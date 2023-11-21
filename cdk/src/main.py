@@ -12,7 +12,7 @@ class CdkMod:
     account: str | None = None
     region: str | None = None
 
-    environment_variables: list[dict[str, str]] = []
+    environment_variables: list[dict[str, str]] | None = None
 
     source_dir: dagger.Directory | None = None
 
@@ -46,6 +46,9 @@ class CdkMod:
     def with_env_var(self, key: str, value: str) -> "CdkMod":
         """Provide a single environment variable key and value.
         Can be provided multiple times"""
+        if self.environment_variables is None:
+            self.environment_variables = []
+
         self.environment_variables.append({key: value})
         return self
 
