@@ -55,11 +55,14 @@ class CdkMod:
     @function
     def with_source(self, source: dagger.Directory) -> "CdkMod":
         """Provide a source directory relative to current directory"""
-        self.source = source
+        self.source_dir = source
         return self
 
     @function
     def synth(self):
+        if self.source_dir is None:
+            self.source_dir = dagger.host().directory(".")
+
         self.container().with_directory(
-            "/src", self.source, exclude=["node_modules/**"]
+            "/src", self.source_dir, exclude=["node_modules/**"]
         ).with_exec(["npm", "ci"]).with_exec(["npm", "run", "cdk", "synth"])
