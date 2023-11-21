@@ -6,9 +6,9 @@ from dagger.mod import function, object_type
 class CdkMod:
     """CDK module"""
 
-    aws_access_key_id: dagger.Secret | None = None
-    aws_secret_access_key: dagger.Secret | None = None
-    aws_session_token: dagger.Secret | None = None
+    aws_access_key_id: dagger.Secret
+    aws_secret_access_key: dagger.Secret
+    aws_session_token: dagger.Secret
     account: str | None = None
     region: str | None = None
 
@@ -32,7 +32,7 @@ class CdkMod:
         self,
         access_key: dagger.Secret,
         secret_key: dagger.Secret,
-        ses_token: dagger.Secret | None = None,
+        ses_token: dagger.Secret,
     ) -> "CdkMod":
         self.aws_access_key_id = access_key
         self.aws_secret_access_key = secret_key
@@ -88,6 +88,9 @@ class CdkMod:
 
         return (
             self.container()
+            .with_secret_variable("AWS_ACCESS_KEY_ID", self.aws_access_key_id)
+            .with_secret_variable("AWS_SECRET_ACCESS_KEY", self.aws_secret_access_key)
+            .with_secret_variable("AWS_SESSION_TOKEN", self.aws_session_token)
             .with_env_variable("CDK_DEFAULT_REGION", self.region)
             .with_env_variable("CDK_DEFAULT_ACCOUNT", self.account)
             .with_exec(["npm", "ci"])
