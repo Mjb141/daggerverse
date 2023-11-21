@@ -1,0 +1,62 @@
+import dagger
+from dagger.mod import function, object_type
+
+
+@object_type
+class CdkMod:
+    """CDK module"""
+
+    aws_access_key_id: dagger.Secret | None = None
+    aws_secret_access_key: dagger.Secret | None = None
+    aws_session_token: dagger.Secret | None = None
+    account: str | None = None
+    region: str | None = None
+
+    environment_variables: list[dict[str, str]] = []
+
+    source_dir: dagger.Directory | None = None
+
+    def container(self) -> dagger.Container:
+        return dagger.container().from_("node:20.9.0-alpine3.18").with_workdir("/src")
+
+    @function
+    def with_aws_credentials(
+        self,
+        aws_access_key_id: dagger.Secret,
+        aws_secret_access_key: dagger.Secret,
+        aws_session_token: dagger.Secret,
+    ) -> "CdkMod":
+        self.aws_access_key_id = aws_access_key_id
+        self.aws_secret_access_key = aws_secret_access_key
+        self.aws_session_token = aws_session_token
+        return self
+
+    @function
+    def with_aws_config(
+        self,
+        region: str,
+        account: str,
+    ) -> "CdkMod":
+        """Provide an account number and an AWS region"""
+        self.account = account
+        self.region = region
+        return self
+
+    @function
+    def with_env_var(self, key: str, value: str) -> "CdkMod":
+        """Provide a single environment variable key and value.
+        Can be provided multiple times"""
+        self.environment_variables.append({key: value})
+        return self
+
+    @function
+    def with_source(self, source: dagger.Directory) -> "CdkMod":
+        """Provide a source directory relative to current directory"""
+        self.source = source
+        return self
+
+    @function
+    def synth(self):
+        self.container().with_directory(
+            "/src", self.source, exclude=["node_modules/**"]
+        ).with_exec(["npm", "ci"]).with_exec(["npm", "run", "cdk", "synth"])
