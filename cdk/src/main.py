@@ -59,10 +59,13 @@ class CdkMod:
         return self
 
     @function
-    def synth(self):
+    def synth(self) -> dagger.Container:
         if self.source_dir is None:
             self.source_dir = dagger.host().directory(".")
 
-        self.container().with_directory(
-            "/src", self.source_dir, exclude=["node_modules/**"]
-        ).with_exec(["npm", "ci"]).with_exec(["npm", "run", "cdk", "synth"])
+        return (
+            self.container()
+            .with_directory("/src", self.source_dir, exclude=["node_modules/**"])
+            .with_exec(["npm", "ci"])
+            .with_exec(["npm", "run", "cdk", "synth"])
+        )
