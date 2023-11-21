@@ -12,7 +12,7 @@ class CdkMod:
     account: str | None = None
     region: str | None = None
 
-    environment_variables: list[dict[str, str]] | None = None
+    environment_variables: list[list[str]] | None = None
 
     source_dir: dagger.Directory | None = None
 
@@ -57,7 +57,7 @@ class CdkMod:
         if self.environment_variables is None:
             self.environment_variables = []
 
-        self.environment_variables.append({key: value})
+        self.environment_variables.append([key, value])
         return self
 
     @function
@@ -87,13 +87,21 @@ class CdkMod:
         if self.aws_session_token is None:
             raise Exception("You must set AWS credentials with '--with-credentials'")
 
-        return (
+        container = (
             self.container()
             .with_secret_variable("AWS_ACCESS_KEY_ID", self.aws_access_key_id)
             .with_secret_variable("AWS_SECRET_ACCESS_KEY", self.aws_secret_access_key)
             .with_secret_variable("AWS_SESSION_TOKEN", self.aws_session_token)
             .with_env_variable("AWS_REGION", self.region)
             .with_env_variable("AWS_ACCOUNT_ID", self.account)
-            .with_exec(["npm", "ci"])
-            .with_exec(["npm", "run", "cdk", "deploy"])
+        )
+
+        if self.environment_variables is not None:
+            for env_var_pair in self.environment_variables:
+                container = container.with_env_variable(
+                    env_var_pair[0], env_var_pair[1]
+                )
+
+        return container.with_exec(["npm", "ci"]).with_exec(
+            ["npm", "run", "cdk", "deploy"]
         )
