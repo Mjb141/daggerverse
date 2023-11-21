@@ -22,13 +22,13 @@ class CdkMod:
     @function
     def with_aws_credentials(
         self,
-        aws_access_key_id: dagger.Secret,
-        aws_secret_access_key: dagger.Secret,
-        aws_session_token: dagger.Secret | None = None,
+        access_key: dagger.Secret,
+        secret_key: dagger.Secret,
+        ses_token: dagger.Secret | None = None,
     ) -> "CdkMod":
-        self.aws_access_key_id = aws_access_key_id
-        self.aws_secret_access_key = aws_secret_access_key
-        self.aws_session_token = aws_session_token
+        self.aws_access_key_id = access_key
+        self.aws_secret_access_key = secret_key
+        self.aws_session_token = ses_token
         return self
 
     @function
