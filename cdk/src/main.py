@@ -6,9 +6,9 @@ from dagger.mod import function, object_type
 class CdkMod:
     """CDK module"""
 
-    aws_access_key_id: dagger.Secret
-    aws_secret_access_key: dagger.Secret
-    aws_session_token: dagger.Secret
+    aws_access_key_id: dagger.Secret | None = None
+    aws_secret_access_key: dagger.Secret | None = None
+    aws_session_token: dagger.Secret | None = None
     account: str | None = None
     region: str | None = None
 
@@ -28,11 +28,11 @@ class CdkMod:
         )
 
     @function
-    def with_aws_credentials(
+    def with_credentials(
         self,
         access_key: dagger.Secret,
         secret_key: dagger.Secret,
-        ses_token: dagger.Secret,
+        ses_token: dagger.Secret | None = None,
     ) -> "CdkMod":
         self.aws_access_key_id = access_key
         self.aws_secret_access_key = secret_key
@@ -40,7 +40,7 @@ class CdkMod:
         return self
 
     @function
-    def with_aws_config(
+    def with_config(
         self,
         region: str,
         account: str,
@@ -77,14 +77,15 @@ class CdkMod:
     @function
     def deploy(self) -> dagger.Container:
         if self.account is None:
-            raise Exception(
-                "You must set an account number using '--with-config --account <number>'"
-            )
-
+            raise Exception("You must set an account number using '--with-config'")
         if self.region is None:
-            raise Exception(
-                "You must set a region using '--with-config --region <region>'"
-            )
+            raise Exception("You must set a region using '--with-config'")
+        if self.aws_access_key_id is None:
+            raise Exception("You must set AWS credentials with '--with-credentials'")
+        if self.aws_secret_access_key is None:
+            raise Exception("You must set AWS credentials with '--with-credentials'")
+        if self.aws_session_token is None:
+            raise Exception("You must set AWS credentials with '--with-credentials'")
 
         return (
             self.container()
