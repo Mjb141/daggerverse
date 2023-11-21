@@ -17,7 +17,15 @@ class CdkMod:
     source_dir: dagger.Directory | None = None
 
     def container(self) -> dagger.Container:
-        return dagger.container().from_("node:20.9.0-alpine3.18").with_workdir("/src")
+        if self.source_dir is None:
+            self.source_dir = dagger.host().directory(".")
+
+        return (
+            dagger.container()
+            .from_("node:20.9.0-alpine3.18")
+            .with_workdir("/src")
+            .with_directory("/src", self.source_dir, exclude=["node_modules/**"])
+        )
 
     @function
     def with_aws_credentials(
@@ -60,12 +68,16 @@ class CdkMod:
 
     @function
     def synth(self) -> dagger.Container:
-        if self.source_dir is None:
-            self.source_dir = dagger.host().directory(".")
-
         return (
             self.container()
-            .with_directory("/src", self.source_dir, exclude=["node_modules/**"])
             .with_exec(["npm", "ci"])
             .with_exec(["npm", "run", "cdk", "synth"])
+        )
+
+    @function
+    def deploy(self) -> dagger.Container:
+        return (
+            self.container()
+            .with_exec(["npm", "ci"])
+            .with_exec(["npm", "run", "cdk", "deploy"])
         )
