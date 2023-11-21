@@ -76,8 +76,20 @@ class CdkMod:
 
     @function
     def deploy(self) -> dagger.Container:
+        if self.account is None:
+            raise Exception(
+                "You must set an account number using '--with-config --account <number>'"
+            )
+
+        if self.region is None:
+            raise Exception(
+                "You must set a region using '--with-config --region <region>'"
+            )
+
         return (
             self.container()
+            .with_env_variable("CDK_DEFAULT_REGION", self.region)
+            .with_env_variable("CDK_DEFAULT_ACCOUNT", self.account)
             .with_exec(["npm", "ci"])
             .with_exec(["npm", "run", "cdk", "deploy"])
         )
