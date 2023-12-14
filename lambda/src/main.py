@@ -70,6 +70,6 @@ class LambdaMod:
 
         return (
             container.with_exec(INSTALL_PACKAGE, skip_entrypoint=True)
-            .with_exec(MOVE_DIR, skip_entrypoint=True)
+            .with_workdir("/dist/lambda/")
             .with_exec(ZIP_PACKAGE, skip_entrypoint=True)
         )
