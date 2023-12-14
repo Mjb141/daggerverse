@@ -1,5 +1,4 @@
-import dagger
-from dagger.mod import function, object_type
+from dagger import dag, function, object_type
 
 INSTALL_PACKAGE = ["poetry", "run", "pip", "install", "-t", "dist/lambda", "."]
 MOVE_DIR = ["cd", "dist/lambda"]
@@ -10,20 +9,20 @@ ZIP_PACKAGE = ["zip", "-x", "'*.pyc'", "-r", "../lambda.zip"]
 class LambdaMod:
     """Lambda module"""
 
-    aws_access_key_id: dagger.Secret | None = None
-    aws_secret_access_key: dagger.Secret | None = None
-    aws_session_token: dagger.Secret | None = None
+    aws_access_key_id: dag.Secret | None = None
+    aws_secret_access_key: dag.Secret | None = None
+    aws_session_token: dag.Secret | None = None
     account: str | None = None
     region: str | None = None
 
-    source_dir: dagger.Directory | None = None
+    source_dir: dag.Directory | None = None
 
-    def container(self) -> dagger.Container:
+    def container(self) -> dag.Container:
         if self.source_dir is None:
-            self.source_dir = dagger.host().directory(".")
+            self.source_dir = dag.host().directory(".")
 
         return (
-            dagger.container()
+            dag.container()
             .from_("mikebrown008/cgr-poetry")
             .with_workdir("/src")
             .with_directory("/src", self.source_dir)
@@ -32,9 +31,9 @@ class LambdaMod:
     @function
     def with_credentials(
         self,
-        access_key: dagger.Secret,
-        secret_key: dagger.Secret,
-        ses_token: dagger.Secret | None = None,
+        access_key: dag.Secret,
+        secret_key: dag.Secret,
+        ses_token: dag.Secret | None = None,
         region: str = "eu-west-1",
     ) -> "LambdaMod":
         self.aws_access_key_id = access_key
@@ -44,13 +43,13 @@ class LambdaMod:
         return self
 
     @function
-    def with_source(self, source: dagger.Directory) -> "LambdaMod":
+    def with_source(self, source: dag.Directory) -> "LambdaMod":
         """Provide a source directory relative to current directory"""
         self.source_dir = source
         return self
 
     @function
-    def publish(self) -> dagger.Container:
+    def publish(self) -> dag.Container:
         if self.region is None:
             raise Exception("You must set a region using '--with-config'")
         if self.aws_access_key_id is None:
