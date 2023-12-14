@@ -50,7 +50,7 @@ class LambdaMod:
         return self
 
     @function
-    def publish(self) -> dag.Container:
+    def publish(self) -> dagger.Container:
         if self.region is None:
             raise Exception("You must set a region using '--with-config'")
         if self.aws_access_key_id is None:
