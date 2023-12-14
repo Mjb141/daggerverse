@@ -1,3 +1,4 @@
+import dagger
 from dagger import dag, function, object_type
 
 INSTALL_PACKAGE = ["poetry", "run", "pip", "install", "-t", "dist/lambda", "."]
@@ -9,15 +10,15 @@ ZIP_PACKAGE = ["zip", "-x", "'*.pyc'", "-r", "../lambda.zip"]
 class LambdaMod:
     """Lambda module"""
 
-    aws_access_key_id: dag.Secret | None = None
-    aws_secret_access_key: dag.Secret | None = None
-    aws_session_token: dag.Secret | None = None
+    aws_access_key_id: dagger.Secret | None = None
+    aws_secret_access_key: dagger.Secret | None = None
+    aws_session_token: dagger.Secret | None = None
     account: str | None = None
     region: str | None = None
 
-    source_dir: dag.Directory | None = None
+    source_dir: dagger.Directory | None = None
 
-    def container(self) -> dag.Container:
+    def container(self) -> dagger.Container:
         if self.source_dir is None:
             self.source_dir = dag.host().directory(".")
 
@@ -31,9 +32,9 @@ class LambdaMod:
     @function
     def with_credentials(
         self,
-        access_key: dag.Secret,
-        secret_key: dag.Secret,
-        ses_token: dag.Secret | None = None,
+        access_key: dagger.Secret,
+        secret_key: dagger.Secret,
+        ses_token: dagger.Secret | None = None,
         region: str = "eu-west-1",
     ) -> "LambdaMod":
         self.aws_access_key_id = access_key
@@ -43,7 +44,7 @@ class LambdaMod:
         return self
 
     @function
-    def with_source(self, source: dag.Directory) -> "LambdaMod":
+    def with_source(self, source: dagger.Directory) -> "LambdaMod":
         """Provide a source directory relative to current directory"""
         self.source_dir = source
         return self
