@@ -3,7 +3,6 @@ from dagger import dag, function, object_type
 
 INSTALL_DEPENDENCIES = ["poetry", "install"]
 INSTALL_PACKAGE = ["poetry", "run", "pip", "install", "-t", "dist/lambda", "."]
-MOVE_DIR = ["cd", "dist/lambda"]
 ZIP_PACKAGE = ["zip", "-x", "'*.pyc'", "-r", "../lambda.zip", "."]
 
 
@@ -73,5 +72,5 @@ class LambdaMod:
             container.with_exec(INSTALL_DEPENDENCIES, skip_entrypoint=True)
             .with_exec(INSTALL_PACKAGE, skip_entrypoint=True)
             .with_workdir("/dist/lambda/")
-            .with_exec(ZIP_PACKAGE, skip_entrypoint=True)
+            # .with_exec(ZIP_PACKAGE, skip_entrypoint=True)
         )
