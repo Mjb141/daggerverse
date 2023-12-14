@@ -3,7 +3,7 @@ from dagger import dag, function, object_type
 
 INSTALL_PACKAGE = ["poetry", "run", "pip", "install", "-t", "dist/lambda", "."]
 MOVE_DIR = ["cd", "dist/lambda"]
-ZIP_PACKAGE = ["zip", "-x", "'*.pyc'", "-r", "../lambda.zip"]
+ZIP_PACKAGE = ["zip", "-x", "'*.pyc'", "-r", "../lambda.zip", "."]
 
 
 @object_type
