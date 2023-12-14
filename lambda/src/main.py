@@ -69,7 +69,7 @@ class LambdaMod:
         )
 
         return (
-            container.with_exec(INSTALL_PACKAGE)
+            self.container.with_exec(INSTALL_PACKAGE)
             .with_exec(MOVE_DIR)
             .with_exec(ZIP_PACKAGE)
         )
