@@ -70,7 +70,7 @@ class LambdaMod:
         )
 
         return (
-            container.with_exec(INSTALL_DEPENDENCIES).with_exec(
+            container.with_exec(INSTALL_DEPENDENCIES, skip_entrypoint=True).with_exec(
                 INSTALL_PACKAGE, skip_entrypoint=True
             )
             # .with_workdir("/dist/lambda/")
