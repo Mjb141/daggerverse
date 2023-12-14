@@ -51,8 +51,6 @@ class LambdaMod:
 
     @function
     def publish(self) -> dagger.Container:
-        if self.account is None:
-            raise Exception("You must set an account number using '--with-config'")
         if self.region is None:
             raise Exception("You must set a region using '--with-config'")
         if self.aws_access_key_id is None:
@@ -68,7 +66,6 @@ class LambdaMod:
             .with_secret_variable("AWS_SECRET_ACCESS_KEY", self.aws_secret_access_key)
             .with_secret_variable("AWS_SESSION_TOKEN", self.aws_session_token)
             .with_env_variable("AWS_REGION", self.region)
-            .with_env_variable("AWS_ACCOUNT_ID", self.account)
         )
 
         return (
