@@ -72,5 +72,5 @@ class LambdaMod:
             container.with_exec(INSTALL_DEPENDENCIES, skip_entrypoint=True)
             .with_exec(INSTALL_PACKAGE, skip_entrypoint=True)
             .with_workdir("dist/lambda/")
-            # .with_exec(ZIP_PACKAGE, skip_entrypoint=True)
+            .with_exec(ZIP_PACKAGE, skip_entrypoint=True)
         )
