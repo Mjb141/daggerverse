@@ -24,7 +24,7 @@ class LambdaMod:
 
         return (
             dag.container()
-            .from_("mikebrown008/cgr-poetry:latest")
+            .from_("mikebrown008/cgr-poetry:0.1.4")
             .with_workdir("/src")
             .with_directory("/src", self.source_dir)
         )
