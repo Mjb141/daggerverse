@@ -98,5 +98,8 @@ class LambdaMod:
             .with_secret_variable("AWS_SECRET_ACCESS_KEY", self.aws_secret_access_key)
             .with_secret_variable("AWS_SESSION_TOKEN", self.aws_session_token)
             .with_workdir("..")
-            .with_exec(COMMAND_COPY_ZIP + [f"s3://{bucket_name}/{object_key}"])
+            .with_exec(
+                COMMAND_COPY_ZIP + [f"s3://{bucket_name}/{object_key}"],
+                skip_entrypoint=True,
+            )
         )
