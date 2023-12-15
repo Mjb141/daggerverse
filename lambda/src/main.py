@@ -84,7 +84,7 @@ class LambdaMod:
         return self.build().with_workdir("..").file(PACKAGE_FILE_NAME)
 
     @function
-    def publish(self, bucket_name: str, object_key: str):
+    def publish(self, bucket_name: str, object_key: str) -> dagger.Container:
         if self.aws_access_key_id is None:
             raise Exception(ERROR_MISSING_AWS_CREDENTIALS)
         if self.aws_secret_access_key is None:
