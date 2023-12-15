@@ -1,9 +1,26 @@
 import dagger
 from dagger import dag, function, object_type
 
-INSTALL_DEPENDENCIES = ["poetry", "install"]
-INSTALL_PACKAGE = ["poetry", "run", "pip", "install", "-t", "dist/lambda", "."]
-ZIP_PACKAGE = ["zip", "-x", "'*.pyc'", "-r", "../lambda.zip", "."]
+PACKAGE_INSTALL_LOCATION = "dist/lambda"
+PACKAGE_FILE_NAME = "lambda.zip"
+
+COMMAND_INSTALL_DEPENDENCIES = ["poetry", "install"]
+COMMAND_INSTALL_PACKAGE = [
+    "poetry",
+    "run",
+    "pip",
+    "install",
+    "-t",
+    PACKAGE_INSTALL_LOCATION,
+    ".",
+]
+COMMAND_ZIP_PACKAGE = ["zip", "-x", "'*.pyc'", "-r", f"../{PACKAGE_FILE_NAME}", "."]
+COMMAND_COPY_ZIP = ["aws", "s3", "cp", PACKAGE_FILE_NAME]
+
+ERROR_MISSING_SOURCE_DIR = (
+    "You must set a source directory using 'with-source --source <dir>'"
+)
+ERROR_MISSING_AWS_CREDENTIALS = "You must set AWS credentials with 'with-credentials'"
 
 
 @object_type
@@ -51,17 +68,35 @@ class LambdaMod:
 
     @function
     def build(self) -> dagger.Container:
-        if self.region is None:
-            raise Exception("You must set a region using '--with-config'")
+        if self.source_dir is None:
+            raise Exception(ERROR_MISSING_SOURCE_DIR)
 
         return (
             self.container()
-            .with_exec(INSTALL_DEPENDENCIES, skip_entrypoint=True)
-            .with_exec(INSTALL_PACKAGE, skip_entrypoint=True)
-            .with_workdir("dist/lambda/")
-            .with_exec(ZIP_PACKAGE, skip_entrypoint=True)
+            .with_exec(COMMAND_INSTALL_DEPENDENCIES, skip_entrypoint=True)
+            .with_exec(COMMAND_INSTALL_PACKAGE, skip_entrypoint=True)
+            .with_workdir(PACKAGE_INSTALL_LOCATION)
+            .with_exec(COMMAND_ZIP_PACKAGE, skip_entrypoint=True)
         )
 
     @function
     def export(self) -> dagger.File:
-        return self.build().with_workdir("..").file("lambda.zip")
+        return self.build().with_workdir("..").file(PACKAGE_FILE_NAME)
+
+    @function
+    def publish(self, bucket_name: str, object_key: str):
+        if self.aws_access_key_id is None:
+            raise Exception(ERROR_MISSING_AWS_CREDENTIALS)
+        if self.aws_secret_access_key is None:
+            raise Exception(ERROR_MISSING_AWS_CREDENTIALS)
+        if self.aws_session_token is None:
+            raise Exception(ERROR_MISSING_AWS_CREDENTIALS)
+
+        return (
+            self.build()
+            .with_secret_variable("AWS_ACCESS_KEY_ID", self.aws_access_key_id)
+            .with_secret_variable("AWS_SECRET_ACCESS_KEY", self.aws_secret_access_key)
+            .with_secret_variable("AWS_SESSION_TOKEN", self.aws_session_token)
+            .with_workdir("..")
+            .with_exec(COMMAND_COPY_ZIP + [f"s3://{bucket_name}/{object_key}"])
+        )
