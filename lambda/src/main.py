@@ -37,7 +37,7 @@ class LambdaMod:
 
     def container(self) -> dagger.Container:
         if self.source_dir is None:
-            self.source_dir = dag.host().directory(".")
+            raise Exception(ERROR_MISSING_SOURCE_DIR)
 
         return (
             dag.container()
@@ -68,9 +68,6 @@ class LambdaMod:
 
     @function
     def build(self) -> dagger.Container:
-        if self.source_dir is None:
-            raise Exception(ERROR_MISSING_SOURCE_DIR)
-
         return (
             self.container()
             .with_exec(COMMAND_INSTALL_DEPENDENCIES, skip_entrypoint=True)
