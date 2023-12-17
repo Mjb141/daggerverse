@@ -1,11 +1,8 @@
 import dagger
 from dagger import dag, function, object_type
 
-PACKAGE_INSTALL_LOCATION = "dist/lambda"
+PACKAGE_INSTALL_LOCATION = "dist"
 PACKAGE_FILE_NAME = "lambda.zip"
-
-PY_COMMAND_INSTALL_DEPENDENCIES = ["poetry", "install"]
-NODE_COMMAND_INSTALL_DEPENDENCIES = ["npm", "install"]
 
 COMMANDS_INSTALL_DEPENDENCIES = {
     "python": ["poetry", "install"],
