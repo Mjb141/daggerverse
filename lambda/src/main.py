@@ -4,28 +4,59 @@ from dagger import dag, function, object_type
 PACKAGE_INSTALL_LOCATION = "dist/lambda"
 PACKAGE_FILE_NAME = "lambda.zip"
 
-COMMAND_INSTALL_DEPENDENCIES = ["poetry", "install"]
-COMMAND_INSTALL_PACKAGE = [
-    "poetry",
-    "run",
-    "pip",
-    "install",
-    "-t",
-    PACKAGE_INSTALL_LOCATION,
-    ".",
-]
-COMMAND_ZIP_PACKAGE = ["zip", "-x", "'*.pyc'", "-r", f"../{PACKAGE_FILE_NAME}", "."]
+PY_COMMAND_INSTALL_DEPENDENCIES = ["poetry", "install"]
+NODE_COMMAND_INSTALL_DEPENDENCIES = ["npm", "install"]
+
+COMMANDS_INSTALL_DEPENDENCIES = {
+    "python": ["poetry", "install"],
+    "node": ["npm", "install"],
+}
+
+COMMANDS_INSTALL_PACKAGE = {
+    "python": [
+        "poetry",
+        "run",
+        "pip",
+        "install",
+        "-t",
+        PACKAGE_INSTALL_LOCATION,
+        ".",
+    ],
+    "node": [
+        "npx",
+        "esbuild",
+        "--bundle",
+        "--minify",
+        "--keep-names",
+        "--sourcemap",
+        "--sources-content=false",
+        "--target=node20",
+        "--platform=node",
+        "--outfile=dist/index.js",
+        "src/index.ts",
+    ],
+}
+
+COMMANDS_ZIP_PACKAGE = {
+    "python": ["zip", "-x", "'*.pyc'", "-r", f"../{PACKAGE_FILE_NAME}", "."],
+    "node": ["zip", "-r", f"../{PACKAGE_FILE_NAME}", "."],
+}
+
 COMMAND_COPY_ZIP = ["aws", "s3", "cp", PACKAGE_FILE_NAME]
 
 ERROR_MISSING_SOURCE_DIR = (
     "You must set a source directory using 'with-source --source <dir>'"
 )
 ERROR_MISSING_AWS_CREDENTIALS = "You must set AWS credentials with 'with-credentials'"
+ERROR_INCOMPATIBLE_SDK = "You must choose either the 'python' or 'node' SDK"
 
 
 @object_type
 class LambdaMod:
     """Lambda module"""
+
+    sdk: str | None = None
+    source_dir: dagger.Directory | None = None
 
     aws_access_key_id: dagger.Secret | None = None
     aws_secret_access_key: dagger.Secret | None = None
@@ -33,15 +64,13 @@ class LambdaMod:
     account: str | None = None
     region: str | None = None
 
-    source_dir: dagger.Directory | None = None
-
     def container(self) -> dagger.Container:
         if self.source_dir is None:
             raise Exception(ERROR_MISSING_SOURCE_DIR)
 
         return (
             dag.container()
-            .from_("mikebrown008/cgr-poetry:0.2")
+            .from_("mikebrown008/build-base:0.1")
             .with_workdir("/src")
             .with_directory("/src", self.source_dir)
         )
@@ -61,6 +90,14 @@ class LambdaMod:
         return self
 
     @function
+    def with_sdk(self, sdk: str) -> "LambdaMod":
+        if sdk not in ["python", "node"]:
+            raise Exception(ERROR_INCOMPATIBLE_SDK)
+
+        self.sdk = sdk
+        return self
+
+    @function
     def with_source(self, source: dagger.Directory) -> "LambdaMod":
         """Provide a source directory relative to current directory"""
         self.source_dir = source
@@ -68,12 +105,16 @@ class LambdaMod:
 
     @function
     def build(self) -> dagger.Container:
+        if self.sdk is None:
+            raise Exception(ERROR_INCOMPATIBLE_SDK)
+
+        print(f"Building a {self.sdk} package")
         return (
             self.container()
-            .with_exec(COMMAND_INSTALL_DEPENDENCIES, skip_entrypoint=True)
-            .with_exec(COMMAND_INSTALL_PACKAGE, skip_entrypoint=True)
+            .with_exec(COMMANDS_INSTALL_DEPENDENCIES[self.sdk])
+            .with_exec(COMMANDS_INSTALL_PACKAGE[self.sdk])
             .with_workdir(PACKAGE_INSTALL_LOCATION)
-            .with_exec(COMMAND_ZIP_PACKAGE, skip_entrypoint=True)
+            .with_exec(COMMANDS_ZIP_PACKAGE[self.sdk])
         )
 
     @function
