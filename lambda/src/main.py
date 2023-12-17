@@ -111,10 +111,10 @@ class LambdaMod:
         print(f"Building a {self.sdk} package")
         return (
             self.container()
-            .with_exec(COMMANDS_INSTALL_DEPENDENCIES[self.sdk])
-            .with_exec(COMMANDS_INSTALL_PACKAGE[self.sdk])
+            .with_exec(COMMANDS_INSTALL_DEPENDENCIES[self.sdk], skip_entrypoint=True)
+            .with_exec(COMMANDS_INSTALL_PACKAGE[self.sdk], skip_entrypoint=True)
             .with_workdir(PACKAGE_INSTALL_LOCATION)
-            .with_exec(COMMANDS_ZIP_PACKAGE[self.sdk])
+            .with_exec(COMMANDS_ZIP_PACKAGE[self.sdk], skip_entrypoint=True)
         )
 
     @function
