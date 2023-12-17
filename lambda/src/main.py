@@ -29,7 +29,7 @@ COMMANDS_INSTALL_PACKAGE = {
         "--sources-content=false",
         "--target=node20",
         "--platform=node",
-        "--outfile=dist/index.js",
+        f"--outfile={PACKAGE_INSTALL_LOCATION}/index.js",
         "src/index.ts",
     ],
 }
