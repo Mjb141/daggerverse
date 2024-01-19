@@ -55,7 +55,7 @@ class PytestMod:
         container = (
             self.container()
             .with_mounted_directory("/src", src_dir)
-            .with_exec(self.dependency_command, skip_entrypoint=True)
+            .with_exec(self.dependency_command)
         )
 
         return await container.with_exec(["pytest", tests_dir])
