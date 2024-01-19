@@ -1,7 +1,7 @@
 import dagger
 from dagger import dag, function, object_type
 
-BASE_PIP_COMMAND: list[str] = ["-m", "pip", "install", "-r"]
+BASE_PIP_COMMAND: list[str] = ["python", "-m", "pip", "install", "-r"]
 CONFIG_NOT_PROVIDED_ERROR: str = (
     "You must use either 'with_pip' or 'with_poetry' before calling 'test'"
 )
@@ -43,7 +43,7 @@ class PytestMod:
 
     @function
     def with_pip(self, requirement_file: str) -> "PytestMod":
-        self.entrypoint = ["python"]
+        self.entrypoint = []
         self.dependency_command = build_requirements_pip_commands(
             requirement_file, None
         )
