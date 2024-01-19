@@ -1,5 +1,5 @@
 import dagger
-from dagger.mod import function, object_type
+from dagger import dag, function, object_type
 
 
 @object_type
@@ -9,7 +9,7 @@ class EchoMod:
     secret: dagger.Secret | None = None
 
     def container(self) -> dagger.Container:
-        return dagger.container().from_("alpine:latest")
+        return dag.container().from_("alpine:latest")
 
     @function
     async def with_secret(
@@ -20,7 +20,7 @@ class EchoMod:
         path: str = "/",
     ) -> "EchoMod":
         """Fetch a secret from Infisical"""
-        self.secret = dagger.infisical().get_secret(name, token, env, path)
+        self.secret = dag.infisical().get_secret(name, token, env, path)
         return self
 
     @function
