@@ -42,10 +42,10 @@ class PytestMod:
         return self
 
     @function
-    def with_pip(self, requirements_files: str) -> "PytestMod":
+    def with_pip(self, requirement_file: str) -> "PytestMod":
         self.entrypoint = ["python"]
         self.dependency_command = build_requirements_pip_commands(
-            requirements_files, None
+            requirement_file, None
         )
         self.run_command = ["pytest"]
         return self
