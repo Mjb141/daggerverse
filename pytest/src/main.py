@@ -1,7 +1,7 @@
 import dagger
 from dagger import dag, function, object_type
 
-BASE_PIP_COMMAND: list[str] = ["-m", "pip3", "install", "-r"]
+BASE_PIP_COMMAND: list[str] = ["-m", "pip", "install", "-r"]
 CONFIG_NOT_PROVIDED_ERROR: str = (
     "You must use either 'with_pip' or 'with_poetry' before calling 'test'"
 )
