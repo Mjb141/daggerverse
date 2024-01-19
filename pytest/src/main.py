@@ -15,44 +15,39 @@ def build_requirements_pip_commands(
 class PytestMod:
     """This is a Pytest class in a module"""
 
-    is_pip: bool = False
-    dependency_commands: list[str] | None = None
+    dependency_command: list[str] | None = None
 
     def container(self) -> dagger.Container:
-        entrypoint = [] if self.is_pip else ["poetry", "run"]
-
         return (
             dag.container()
             .from_("mikebrown008/cgr-poetry:0.1.4")
             .with_workdir("/src")
             .with_user("root")
-            .with_entrypoint(entrypoint)
         )
 
     @function
     def with_poetry(self) -> "PytestMod":
-        self.dependency_commands = ["poetry", "install"]
+        self.dependency_command = ["poetry", "install"]
         return self
 
     @function
     def with_pip(self, requirements_files: str) -> "PytestMod":
-        self.is_pip = True
-        self.dependency_commands = build_requirements_pip_commands(
+        self.dependency_command = build_requirements_pip_commands(
             requirements_files, None
         )
         return self
 
     @function
     async def test(self, src_dir: dagger.Directory, tests_dir: str) -> dagger.Container:
-        self.dependency_commands = (
-            ["poetry", "install"]
-            if self.dependency_commands is None
-            else self.dependency_commands
+        if self.dependency_command is None:
+            raise Exception(
+                "You must use either 'with_pip' or 'with_poetry' before calling 'test'"
+            )
+
+        container = (
+            self.container()
+            .with_mounted_directory("/src", src_dir)
+            .with_exec(self.dependency_command, skip_entrypoint=True)
         )
-
-        container = self.container().with_mounted_directory("/src", src_dir)
-
-        for dependency_command in self.dependency_commands:
-            container = container.with_exec(dependency_command)
 
         return await container.with_exec(["pytest", tests_dir])
