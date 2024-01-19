@@ -1,5 +1,5 @@
 import dagger
-from dagger.mod import function, object_type
+from dagger import dag, function, object_type
 
 BASE_PIP_COMMAND: list[str] = ["pip3", "install", "-r"]
 
@@ -24,7 +24,7 @@ class PytestMod:
 
     def container(self) -> dagger.Container:
         return (
-            dagger.container()
+            dag.container()
             .from_("mikebrown008/cgr-poetry:0.1.4")
             .with_workdir("/src")
             .with_user("root")
