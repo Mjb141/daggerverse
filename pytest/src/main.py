@@ -19,6 +19,7 @@ class PytestMod:
     """This is a Pytest class in a module"""
 
     dependency_command: list[str] | None = None
+    run_command: list[str] | None = None
     entrypoint: list[str] | None = None
 
     def container(self) -> dagger.Container:
@@ -37,6 +38,7 @@ class PytestMod:
     def with_poetry(self) -> "PytestMod":
         self.entrypoint = ["poetry"]
         self.dependency_command = ["install"]
+        self.run_command = ["run", "pytest"]
         return self
 
     @function
@@ -45,17 +47,17 @@ class PytestMod:
         self.dependency_command = build_requirements_pip_commands(
             requirements_files, None
         )
+        self.run_command = ["pytest"]
         return self
 
     @function
     async def test(self, src_dir: dagger.Directory, tests_dir: str) -> dagger.Container:
-        if self.dependency_command is None:
+        if self.dependency_command is None or self.run_command is None:
             raise Exception(CONFIG_NOT_PROVIDED_ERROR)
 
-        container = (
+        return (
             self.container()
             .with_mounted_directory("/src", src_dir)
             .with_exec(self.dependency_command)
+            .with_exec(self.run_command + [tests_dir])
         )
-
-        return await container.with_exec(["pytest", tests_dir])
