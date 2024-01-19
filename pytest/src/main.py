@@ -5,14 +5,10 @@ BASE_PIP_COMMAND: list[str] = ["pip3", "install", "-r"]
 
 
 def build_requirements_pip_commands(
-    dependencies_files: str, pip_args: str | None
-) -> list[list[str]]:
+    dependency_file: str, pip_args: str | None
+) -> list[str]:
     additional_pip_args = [pip_args] if pip_args is not None else []
-
-    return [
-        BASE_PIP_COMMAND + [dependency_file] + additional_pip_args
-        for dependency_file in dependencies_files.split(",")
-    ]
+    return BASE_PIP_COMMAND + [dependency_file] + additional_pip_args
 
 
 @object_type
@@ -20,7 +16,7 @@ class PytestMod:
     """This is a Pytest class in a module"""
 
     is_pip: bool = False
-    dependency_commands: list[list[str]] | None = None
+    dependency_commands: list[str] | None = None
 
     def container(self) -> dagger.Container:
         entrypoint = [] if self.is_pip else ["poetry", "run"]
@@ -35,7 +31,7 @@ class PytestMod:
 
     @function
     def with_poetry(self) -> "PytestMod":
-        self.dependency_commands = [["poetry", "install"]]
+        self.dependency_commands = ["poetry", "install"]
         return self
 
     @function
@@ -49,7 +45,7 @@ class PytestMod:
     @function
     async def test(self, src_dir: dagger.Directory, tests_dir: str) -> dagger.Container:
         self.dependency_commands = (
-            [["poetry", "install"]]
+            ["poetry", "install"]
             if self.dependency_commands is None
             else self.dependency_commands
         )
