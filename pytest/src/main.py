@@ -19,41 +19,28 @@ def build_requirements_pip_commands(
 class PytestMod:
     """This is a Pytest class in a module"""
 
-    is_pip: bool = False
-    dependency_commands: list[list[str]] | None = None
+    dependency_commands: list[list[str]] = [["poetry", "install"]]
+    entrypoint: list[str] = ["poetry", "run"]
 
     def container(self) -> dagger.Container:
-        entrypoint = [] if self.is_pip else ["poetry", "run"]
-
         return (
             dagger.container()
             .from_("mikebrown008/cgr-poetry:0.1.4")
             .with_workdir("/src")
             .with_user("root")
-            .with_entrypoint(entrypoint)
+            .with_entrypoint(self.entrypoint)
         )
-
-    @function
-    def with_poetry(self) -> "PytestMod":
-        self.dependency_commands = [["poetry", "install"]]
-        return self
 
     @function
     def with_pip(self, requirements_files: str) -> "PytestMod":
-        self.is_pip = True
         self.dependency_commands = build_requirements_pip_commands(
             requirements_files, None
         )
+        self.entrypoint = []
         return self
 
     @function
     async def test(self, src_dir: dagger.Directory, tests_dir: str) -> dagger.Container:
-        self.dependency_commands = (
-            [["poetry", "install"]]
-            if self.dependency_commands is None
-            else self.dependency_commands
-        )
-
         container = self.container().with_mounted_directory("/src", src_dir)
 
         for dependency_command in self.dependency_commands:
