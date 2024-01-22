@@ -67,7 +67,7 @@ class LambdaMod:
 
         return (
             dag.container()
-            .from_("mikebrown008/build-base:0.1")
+            .from_("mikebrown008/build-base:0.2.1")
             .with_workdir("/src")
             .with_directory("/src", self.source_dir)
         )
