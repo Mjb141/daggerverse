@@ -2,6 +2,11 @@
   "name": "echo-mod",
   "sdk": "python",
   "dependencies": [
-    "github.com/jpadams/daggerverse/infisical@2588936e041960999462b469ce7b8ef5504fc2eb"
-  ]
+    {
+      "name": "infisical",
+      "source": "github.com/jpadams/daggerverse/infisical@2588936e041960999462b469ce7b8ef5504fc2eb"
+    }
+  ],
+  "source": ".",
+  "engineVersion": "v0.9.10"
 }
