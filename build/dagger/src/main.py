@@ -30,6 +30,6 @@ class Build:
     async def test(self, dir: dagger.Directory) -> str:
         return (
             await self.build(dir)
-            .with_exec(["echo", "INSIDE", "CONTAINER", "$NUMBER"])
+            .with_exec(["sh", "-c", "echo INSIDE CONTAINER $NUMBER"])
             .stdout()
         )
