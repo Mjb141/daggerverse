@@ -28,4 +28,8 @@ class Build:
 
     @function
     async def test(self, dir: dagger.Directory) -> str:
-        return await self.build(dir).with_exec(["echo", "INSIDE", "CONTAINER"]).stdout()
+        return (
+            await self.build(dir)
+            .with_exec(["echo", "INSIDE", "CONTAINER", "$NUMBER"])
+            .stdout()
+        )
