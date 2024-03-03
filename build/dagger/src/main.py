@@ -25,3 +25,7 @@ class Build:
             dockerfile=file_name,
             build_args=[BuildArg(k, v) for (k, v) in self.build_args.items()],
         )
+
+    @function
+    async def test(self, dir: dagger.Directory) -> str:
+        return await self.build(dir).with_exec(["echo", "INSIDE", "CONTAINER"]).stdout()
