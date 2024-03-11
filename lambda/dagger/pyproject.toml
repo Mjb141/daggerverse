@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "lambda-mod"
-version = "0.1.0"
+version = "0.1.1"
 description = "Lambda Dagger module"
 authors = ["Mjb141"]
 packages = [{ include = "main.py", from = "src" }]
