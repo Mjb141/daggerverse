@@ -31,7 +31,7 @@ class Lambda:
 
         return (
             dag.container()
-            .from_("mikebrown008/build-base:0.2.1")
+            .from_("mikebrown008/build-base:0.3")
             .with_workdir("/src")
             .with_directory("/src", self.source_dir)
         )
@@ -72,7 +72,6 @@ class Lambda:
         if self.sdk is None:
             raise Exception(ERROR_INCOMPATIBLE_SDK)
 
-        print(f"Building a {self.sdk} package")
         return (
             self.container()
             .with_exec(COMMANDS_INSTALL_DEPENDENCIES[self.sdk], skip_entrypoint=True)

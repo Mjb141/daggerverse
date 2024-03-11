@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "lambda_py"
+version = "0.2.0"
+description = ""
+authors = ["Mjb141"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+requests = "^2.31.0"
+aws-requests-auth = "^0.4.3"
+qrcode = "^7.4.2"
+
+[tool.poetry.group.dev.dependencies]
+boto3 = "^1.33.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
