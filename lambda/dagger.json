@@ -1,6 +1,6 @@
 {
   "name": "lambda-mod",
   "sdk": "python",
-  "source": ".",
+  "source": "dagger",
   "engineVersion": "v0.10.1"
 }
