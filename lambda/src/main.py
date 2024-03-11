@@ -1,65 +1,29 @@
 import dagger
-from dagger import dag, function, object_type
+from dagger import dag, function, object_type, Doc
+from typing import Annotated
 
-PACKAGE_INSTALL_LOCATION = "dist"
-PACKAGE_FILE_NAME = "lambda.zip"
-
-COMMANDS_INSTALL_DEPENDENCIES = {
-    "python": ["poetry", "install"],
-    "node": ["npm", "install"],
-}
-
-COMMANDS_INSTALL_PACKAGE = {
-    "python": [
-        "poetry",
-        "run",
-        "pip",
-        "install",
-        "-t",
-        PACKAGE_INSTALL_LOCATION,
-        ".",
-    ],
-    "node": [
-        "npx",
-        "esbuild",
-        "--bundle",
-        "--minify",
-        "--keep-names",
-        "--sourcemap",
-        "--sources-content=false",
-        "--target=node20",
-        "--platform=node",
-        f"--outfile={PACKAGE_INSTALL_LOCATION}/index.js",
-        "src/index.ts",
-    ],
-}
-
-COMMANDS_ZIP_PACKAGE = {
-    "python": ["zip", "-x", "'*.pyc'", "-r", f"../{PACKAGE_FILE_NAME}", "."],
-    "node": ["zip", "-r", f"../{PACKAGE_FILE_NAME}", "."],
-}
-
-COMMAND_COPY_ZIP = ["aws", "s3", "cp", PACKAGE_FILE_NAME]
-
-ERROR_MISSING_SOURCE_DIR = (
-    "You must set a source directory using 'with-source --source <dir>'"
-)
-ERROR_MISSING_AWS_CREDENTIALS = "You must set AWS credentials with 'with-credentials'"
-ERROR_INCOMPATIBLE_SDK = "You must choose either the 'python' or 'node' SDK"
+from .constants import *
 
 
 @object_type
 class LambdaMod:
-    """Lambda module"""
+    """Nodejs and Python Lambda ZIP file builder"""
 
-    sdk: str | None = None
-    source_dir: dagger.Directory | None = None
+    sdk: Annotated[str | None, Doc("Which SDK is in use: 'python' or 'node'")] = None
+    source_dir: Annotated[
+        dagger.Directory | None,
+        Doc(
+            "The module's source directory: location of 'pyproject.toml' or 'package.json'"
+        ),
+    ] = None
 
-    aws_access_key_id: dagger.Secret | None = None
-    aws_secret_access_key: dagger.Secret | None = None
-    aws_session_token: dagger.Secret | None = None
-    account: str | None = None
-    region: str | None = None
+    aws_access_key_id: Annotated[dagger.Secret | None, Doc("AWS_ACCESS_KEY_ID")] = None
+    aws_secret_access_key: Annotated[
+        dagger.Secret | None, Doc("AWS_SECRET_ACCESS_KEY")
+    ] = None
+    aws_session_token: Annotated[dagger.Secret | None, Doc("AWS_SESSION_TOKEN")] = None
+    region: Annotated[str | None, Doc("AWS_REGION")] = None
+    account: Annotated[str | None, Doc("The AWS Account ID")] = None
 
     def container(self) -> dagger.Container:
         if self.source_dir is None:
@@ -80,6 +44,7 @@ class LambdaMod:
         ses_token: dagger.Secret | None = None,
         region: str = "eu-west-1",
     ) -> "LambdaMod":
+        """Set AWS credentials for operations that require them."""
         self.aws_access_key_id = access_key
         self.aws_secret_access_key = secret_key
         self.aws_session_token = ses_token
@@ -88,6 +53,7 @@ class LambdaMod:
 
     @function
     def with_sdk(self, sdk: str) -> "LambdaMod":
+        """Set the SDK: 'node' or 'python'."""
         if sdk not in ["python", "node"]:
             raise Exception(ERROR_INCOMPATIBLE_SDK)
 
@@ -102,6 +68,7 @@ class LambdaMod:
 
     @function
     def build(self) -> dagger.Container:
+        """Build the package and it's dependencies"""
         if self.sdk is None:
             raise Exception(ERROR_INCOMPATIBLE_SDK)
 
@@ -116,10 +83,12 @@ class LambdaMod:
 
     @function
     def export(self) -> dagger.File:
+        """Export the built ZIP file"""
         return self.build().with_workdir("..").file(PACKAGE_FILE_NAME)
 
     @function
     def publish(self, bucket_name: str, object_key: str) -> dagger.Container:
+        """Publish the built ZIP file to Amazon S3. Requires AWS Credentials."""
         if self.aws_access_key_id is None:
             raise Exception(ERROR_MISSING_AWS_CREDENTIALS)
         if self.aws_secret_access_key is None:
