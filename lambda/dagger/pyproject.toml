@@ -1,9 +1,9 @@
 [tool.poetry]
-name = "lambda"
+name = "main"
 version = "0.1.1"
 description = "Lambda Dagger module"
 authors = ["Mjb141"]
-packages = [{ include = "main" }]
+# packages = [{ include = "main" }]
 
 [tool.poetry.dependencies]
 python = "^3.11"
