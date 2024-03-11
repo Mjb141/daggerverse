@@ -18,13 +18,14 @@ This is formed of:
 ### To use from Dagger:
 
 #### Building:
-* `dagger call -m "github.com/mjb141/daggerverse/lambda@main" with-sdk --sdk node with-source --source . build`
+* `dagger call with-sdk --sdk node with-source --dir test/lambda-ts build`
 
 #### Interactive shell:
-* `dagger shell -m "github.com/mjb141/daggerverse/lambda@main" with-sdk --sdk node with-source --source . build`
+* `dagger call with-sdk --sdk node with-source --dir test/lambda-ts build terminal`
 
 #### Export the zip for Lambda:
-* `dagger download -m "github.com/mjb141/daggerverse/lambda@main" with-sdk --sdk node with-source --source . export`
+* **Either**: `dagger call with-sdk --sdk node with-source --dir test/lambda-ts zip-file export --path lambda.zip`
+* **Or**: `dagger call with-sdk --sdk node with-source --dir test/lambda-py build file --path ../lambda.zip export --path ./lambda.zip`
 
 #### Publish the zip to S3:
-* `dagger call -m "github.com/mjb141/daggerverse/lambda@main" with-credentials --access-key $AWS_ACCESS_KEY_ID --secret-key $AWS_SECRET_ACCESS_KEY --ses-token $AWS_SESSION_TOKEN with-sdk --sdk node with-source --source . publish --bucket_name $BUCKET_NAME --object-key $OBJECT_NAME`
+* `dagger call with-credentials --access-key env:AWS_ACCESS_KEY_ID --secret-key env:AWS_SECRET_ACCESS_KEY --ses-token env:AWS_SESSION_TOKEN with-sdk --sdk node with-source --dir test/lambda-ts publish --bucket_name $BUCKET_NAME --object-key $OBJECT_NAME`

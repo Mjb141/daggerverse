@@ -44,7 +44,7 @@ class Lambda:
         ses_token: dagger.Secret | None = None,
         region: str = "eu-west-1",
     ) -> "Lambda":
-        """Set AWS credentials for operations that require them."""
+        """(Required for: publish) Set AWS credentials."""
         self.aws_access_key_id = access_key
         self.aws_secret_access_key = secret_key
         self.aws_session_token = ses_token
@@ -53,7 +53,7 @@ class Lambda:
 
     @function
     def with_sdk(self, sdk: str) -> "Lambda":
-        """Set the SDK: 'node' or 'python'."""
+        """(Required for: build) Set the SDK: 'node' or 'python'."""
         if sdk not in ["python", "node"]:
             raise Exception(ERROR_INCOMPATIBLE_SDK)
 
@@ -61,9 +61,9 @@ class Lambda:
         return self
 
     @function
-    def with_source(self, source: dagger.Directory) -> "Lambda":
-        """Provide a source directory relative to current directory"""
-        self.source_dir = source
+    def with_source(self, dir: dagger.Directory) -> "Lambda":
+        """(Required for: build) Provide a source directory relative to current directory"""
+        self.source_dir = dir
         return self
 
     @function
@@ -81,13 +81,13 @@ class Lambda:
         )
 
     @function
-    def export(self) -> dagger.File:
-        """Export the built ZIP file"""
+    def zip_file(self) -> dagger.File:
+        """(Requires: build) Provide the built ZIP file"""
         return self.build().with_workdir("..").file(PACKAGE_FILE_NAME)
 
     @function
     def publish(self, bucket_name: str, object_key: str) -> dagger.Container:
-        """Publish the built ZIP file to Amazon S3. Requires AWS Credentials."""
+        """(Requires: build) Publish the built ZIP file to Amazon S3. Requires AWS Credentials."""
         if self.aws_access_key_id is None:
             raise Exception(ERROR_MISSING_AWS_CREDENTIALS)
         if self.aws_secret_access_key is None:
