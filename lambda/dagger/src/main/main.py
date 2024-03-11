@@ -2,7 +2,7 @@ import dagger
 from dagger import dag, function, object_type, Doc
 from typing import Annotated
 
-from constants import *
+from .constants import *
 
 
 @object_type
