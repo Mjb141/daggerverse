@@ -1,0 +1,6 @@
+{
+  "name": "example",
+  "sdk": "python",
+  "source": "dagger",
+  "engineVersion": "v0.10.1"
+}
