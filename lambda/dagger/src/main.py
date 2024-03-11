@@ -6,7 +6,7 @@ from constants import *
 
 
 @object_type
-class LambdaMod:
+class Lambda:
     """Nodejs and Python Lambda ZIP file builder"""
 
     sdk: Annotated[str | None, Doc("Which SDK is in use: 'python' or 'node'")] = None
@@ -43,7 +43,7 @@ class LambdaMod:
         secret_key: dagger.Secret,
         ses_token: dagger.Secret | None = None,
         region: str = "eu-west-1",
-    ) -> "LambdaMod":
+    ) -> "Lambda":
         """Set AWS credentials for operations that require them."""
         self.aws_access_key_id = access_key
         self.aws_secret_access_key = secret_key
@@ -52,7 +52,7 @@ class LambdaMod:
         return self
 
     @function
-    def with_sdk(self, sdk: str) -> "LambdaMod":
+    def with_sdk(self, sdk: str) -> "Lambda":
         """Set the SDK: 'node' or 'python'."""
         if sdk not in ["python", "node"]:
             raise Exception(ERROR_INCOMPATIBLE_SDK)
@@ -61,7 +61,7 @@ class LambdaMod:
         return self
 
     @function
-    def with_source(self, source: dagger.Directory) -> "LambdaMod":
+    def with_source(self, source: dagger.Directory) -> "Lambda":
         """Provide a source directory relative to current directory"""
         self.source_dir = source
         return self
