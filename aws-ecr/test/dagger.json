@@ -1,0 +1,12 @@
+{
+  "name": "test-ecr",
+  "sdk": "python",
+  "dependencies": [
+    {
+      "name": "aws-ecr",
+      "source": "github.com/mjb141/daggerverse/aws-ecr@5b9948571394a9210a5b82989841ac5479472e1d"
+    }
+  ],
+  "source": "dagger",
+  "engineVersion": "v0.10.2"
+}
