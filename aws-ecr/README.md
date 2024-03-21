@@ -35,36 +35,6 @@ Push `alpine:latest` to an ECR repository named `test` in AWS account ID `123456
 
 #### Module
 
-Push `alpine:latest` to an ECR repository named `test` in AWS account ID `123456789012` with multiple tags:
-
-```py
-image = dag.container().from_("alpine:latest")
-
-dag.aws_ecr().with_credentials(
-    access_key = os.getenv("AWS_ACCESS_KEY_ID"),
-    secret_key = os.getenv("AWS_SECRET_ACCESS_KEY"),
-    session_token = os.getenv("AWS_SESSION_TOKEN")
-).push(
-    image,
-    "123456789012",
-    "test",
-    tags = ["new", "latest", "1"]
-)
-```
-
-Push a built image to an ECR repository named `test` in AWS account ID `123456789012` with a `latest` tag:
-
-```py
-image = dag.directory(".").docker_build()
-
-dag.aws_ecr().with_credentials(
-    access_key = os.getenv("AWS_ACCESS_KEY_ID"),
-    secret_key = os.getenv("AWS_SECRET_ACCESS_KEY"),
-    session_token = os.getenv("AWS_SESSION_TOKEN")
-).push(
-    image,
-    "123456789012",
-    "test",
-    tags = ["latest"]
-)
-```
+* Installation: See module installed as a dependency in [test/dagger.json](./test/dagger.json).
+* Usage: See usage as a dependency in [test/dagger/src/main.py](./test/dagger/src/main.py)
+* Run tests: See running these module as dependency tests in [test/README.md](./test/README.md)
