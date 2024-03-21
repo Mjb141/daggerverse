@@ -62,18 +62,12 @@ class AwsEcr:
 
         base = f"{account_id}.dkr.ecr.{self.region}.amazonaws.com"
 
-        if tags is None:
-            return [
-                await ctr.with_registry_auth(base, "AWS", password).publish(
-                    f"{base}/{repository}"
-                )
-            ]
+        ctr = ctr.with_registry_auth(base, "AWS", password)
 
-        publish_targets = [f"{base}/{repository}:{tag}" for tag in tags]
+        if tags is None:
+            return [await ctr.publish(f"{base}/{repository}")]
 
         return [
-            await ctr.with_registry_auth(
-                f"{account_id}.dkr.ecr.{self.region}.amazonaws.com", "AWS", password
-            ).publish(target)
-            for target in publish_targets
+            await ctr.publish(target)
+            for target in [f"{base}/{repository}:{tag}" for tag in tags]
         ]
