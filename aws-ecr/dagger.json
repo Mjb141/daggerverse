@@ -1,0 +1,6 @@
+{
+  "name": "aws-ecr",
+  "sdk": "python",
+  "source": "dagger",
+  "engineVersion": "v0.10.2"
+}
