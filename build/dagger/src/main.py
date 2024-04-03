@@ -1,7 +1,7 @@
 import dagger
 import dataclasses
 
-from dagger import dag, function, object_type, Platform, BuildArg
+from dagger import function, object_type, Platform, BuildArg
 
 
 @object_type
@@ -24,12 +24,4 @@ class Build:
             platform=Platform(platform),
             dockerfile=file_name,
             build_args=[BuildArg(k, v) for (k, v) in self.build_args.items()],
-        )
-
-    @function
-    async def test(self, dir: dagger.Directory) -> str:
-        return (
-            await self.build(dir)
-            .with_exec(["sh", "-c", "echo INSIDE CONTAINER $NUMBER"])
-            .stdout()
         )
