@@ -1,0 +1,3 @@
+ARG VERSION=3.19.1
+FROM alpine:$VERSION
+COPY . .
