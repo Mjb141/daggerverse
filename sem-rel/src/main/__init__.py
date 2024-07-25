@@ -31,8 +31,8 @@ class SemRel:
         return (
             dag.container()
             .from_("hoppr/semantic-release")
-            .with_directory("/opt/app", dir)
-            .with_workdir("/opt/app")
+            .with_directory("/src", dir)
+            .with_workdir("/src")
             .with_exec(["ls", "-la"])
             .with_exec(["semantic-release"])
         )
