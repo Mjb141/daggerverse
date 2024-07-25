@@ -27,7 +27,11 @@ from dagger import dag, function, object_type
 class SemRel:
     @function
     def release(
-        self, dir: dagger.Directory, token: dagger.Secret, ci_check: bool = True
+        self,
+        dir: dagger.Directory,
+        token: dagger.Secret,
+        check_if_ci: bool = True,
+        dry_run: bool = True,
     ) -> dagger.Container:
         """Returns a container that echoes whatever string argument is provided"""
         return (
@@ -37,5 +41,11 @@ class SemRel:
             .with_directory("/src", dir)
             .with_workdir("/src")
             .with_exec(["ls", "-la"])
-            .with_exec(["semantic-release", "--ci" if ci_check else "--no-ci"])
+            .with_exec(
+                [
+                    "semantic-release",
+                    "--ci" if check_if_ci else "--no-ci",
+                    "--dry-run" if not dry_run else "",
+                ]
+            )
         )
