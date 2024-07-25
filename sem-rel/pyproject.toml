@@ -1,0 +1,25 @@
+# [project]
+# name = "main"
+# version = "0.0.0"
+# dependencies = []
+#
+# [build-system]
+# requires = ["hatchling"]
+# build-backend = "hatchling.build"
+
+[tool.poetry]
+name = "sem-rel"
+version = "0.1"
+description = "Semantic Release Dagger"
+authors = ["Mjb141"]
+packages = [{ include = "main", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[tool.poetry.group.dev.dependencies]
+dagger-io = { path = "./sdk", develop = true }
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
