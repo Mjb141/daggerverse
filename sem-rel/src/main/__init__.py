@@ -26,11 +26,12 @@ from dagger import dag, function, object_type
 @object_type
 class SemRel:
     @function
-    def release(self, dir: dagger.Directory) -> dagger.Container:
+    def release(self, dir: dagger.Directory, token: dagger.Secret) -> dagger.Container:
         """Returns a container that echoes whatever string argument is provided"""
         return (
             dag.container()
             .from_("hoppr/semantic-release")
+            .with_secret_variable("GH_TOKEN", token)
             .with_directory("/src", dir)
             .with_workdir("/src")
             .with_exec(["ls", "-la"])
