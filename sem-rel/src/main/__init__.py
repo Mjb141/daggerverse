@@ -34,18 +34,21 @@ class SemRel:
         dry_run: bool = True,
     ) -> dagger.Container:
         """Returns a container that echoes whatever string argument is provided"""
+        cmd = ["semantic-release"]
+
+        if check_if_ci:
+            cmd = cmd + ["--ci"]
+        else:
+            cmd = cmd + ["--no-ci"]
+
+        if dry_run:
+            cmd = cmd + ["--dry-run"]
+
         return (
             dag.container()
             .from_("hoppr/semantic-release")
             .with_secret_variable("GH_TOKEN", token)
             .with_directory("/src", dir)
             .with_workdir("/src")
-            .with_exec(["ls", "-la"])
-            .with_exec(
-                [
-                    "semantic-release",
-                    "--ci" if check_if_ci else "--no-ci",
-                    "--dry-run" if not dry_run else "",
-                ]
-            )
+            .with_exec(cmd)
         )
