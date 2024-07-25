@@ -33,6 +33,6 @@ class SemRel:
             .from_("hoppr/semantic-release")
             .with_directory("/opt/app", dir)
             .with_workdir("/opt/app")
-            .with_exec(["ls"])
+            .with_exec(["ls", "-la"])
             .with_exec(["semantic-release"])
         )
