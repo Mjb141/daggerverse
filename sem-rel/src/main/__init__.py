@@ -43,7 +43,7 @@ class SemRel:
         dry_run: bool = True,
         add_branch: bool = False,
     ) -> dagger.Container:
-        """Returns a container that echoes whatever string argument is provided"""
+        """Returns a container that runs semantic-release on your branch."""
 
         ctr = (
             dag.container()
