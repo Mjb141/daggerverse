@@ -48,9 +48,14 @@ class SemRel:
         if add_branch:
             branch = await ctr.with_exec(["git", "branch", "--show-current"]).stdout()
 
+            print(f"Current Branch: {branch}")
+
             rc_file = await dir.file(".releaserc.json").contents()
+            print(f"current '.releaserc.json': {rc_file}")
+
             content = json.loads(rc_file)
             content["release"]["branches"] = {"name": branch.strip()}
+            print(f"Updated '.releaserc.json': {content}")
 
             dir = dir.without_file(".releaserc.json").with_new_file(
                 ".releaserc.json", json.dumps(content)
