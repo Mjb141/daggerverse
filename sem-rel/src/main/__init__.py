@@ -51,11 +51,18 @@ class SemRel:
             print(f"Current Branch: {branch}")
 
             rc_file = await dir.file(".releaserc.json").contents()
-            print(f"current '.releaserc.json': {rc_file}")
+            print(f"Current '.releaserc.json':({type(rc_file)})\n {rc_file}")
 
             content = json.loads(rc_file)
-            content["release"]["branches"] = {"name": branch.strip()}
-            print(f"Updated '.releaserc.json': {content}")
+
+            if "release" in content:
+                content["release"]["branches"] = {"name": branch.strip()}
+            elif "branches" in content:
+                content["branches"] = {"name": branch.strip()}
+            else:
+                print(f"No top-level key found in 'content': {content}")
+
+            print(f"Updated '.releaserc.json':\n {content}")
 
             dir = dir.without_file(".releaserc.json").with_new_file(
                 ".releaserc.json", json.dumps(content)
