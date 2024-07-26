@@ -14,6 +14,7 @@ if appropriate. All modules should have a short description.
 """
 
 import dagger
+import json
 from dagger import dag, function, object_type
 
 # NOTE: it's recommended to move your code into other files in this package
@@ -26,18 +27,38 @@ from dagger import dag, function, object_type
 @object_type
 class SemRel:
     @function
-    def release(
+    async def release(
         self,
         dir: dagger.Directory,
         provider: str,
         token: dagger.Secret,
         check_if_ci: bool = True,
         dry_run: bool = True,
+        add_branch: bool = False,
     ) -> dagger.Container:
         """Returns a container that echoes whatever string argument is provided"""
-        env_var_key = "GH_TOKEN" if provider == "github" else "GL_TOKEN"
-        cmd = ["semantic-release"]
 
+        ctr = (
+            dag.container()
+            .from_("hoppr/semantic-release")
+            .with_directory("/src", dir)
+            .with_workdir("/src")
+        )
+
+        if add_branch:
+            branch = await ctr.with_exec(["git", "branch", "--show-current"]).stdout()
+
+            rc_file = await dir.file(".releaserc.json").contents()
+            content = json.loads(rc_file)
+            content["release"]["branches"] = {"name": branch.strip()}
+
+            dir = dir.without_file(".releaserc.json").with_new_file(
+                ".releaserc.json", json.dumps(content)
+            )
+
+        env_var_key = "GH_TOKEN" if provider == "github" else "GL_TOKEN"
+
+        cmd = ["semantic-release"]
         if check_if_ci:
             cmd = cmd + ["--ci"]
         else:
