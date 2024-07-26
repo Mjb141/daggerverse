@@ -29,11 +29,13 @@ class SemRel:
     def release(
         self,
         dir: dagger.Directory,
+        provider: str,
         token: dagger.Secret,
         check_if_ci: bool = True,
         dry_run: bool = True,
     ) -> dagger.Container:
         """Returns a container that echoes whatever string argument is provided"""
+        env_var_key = "GH_TOKEN" if provider == "github" else "GL_TOKEN"
         cmd = ["semantic-release"]
 
         if check_if_ci:
@@ -47,7 +49,7 @@ class SemRel:
         return (
             dag.container()
             .from_("hoppr/semantic-release")
-            .with_secret_variable("GH_TOKEN", token)
+            .with_secret_variable(env_var_key, token)
             .with_directory("/src", dir)
             .with_workdir("/src")
             .with_exec(cmd)
