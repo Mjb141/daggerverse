@@ -24,11 +24,14 @@ from dagger import dag, function, object_type
 # available to Dagger.
 
 
-def construct_cmd(check_if_ci: bool, dry_run: bool) -> list[str]:
+def construct_cmd(check_if_ci: bool, dry_run: bool):
     cmd = ["semantic-release"]
-    cmd = cmd + ["--ci"] if check_if_ci else ["--no-ci"]
-    cmd = cmd + ["--dry-run"] if dry_run else [""]
-    return list(map(str.strip, cmd))
+    if not check_if_ci:
+        cmd = cmd + ["--no-ci"]
+
+    if dry_run:
+        cmd = cmd + ["--dry-run"]
+    return cmd
 
 
 @object_type
