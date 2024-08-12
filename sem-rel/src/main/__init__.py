@@ -13,7 +13,7 @@ rest is a long description with more detail on the module's purpose or usage,
 if appropriate. All modules should have a short description.
 """
 
-from typing import Annotated, Dict
+from typing import Annotated
 import dagger
 import json
 from dagger import dag, function, object_type, Doc
@@ -56,6 +56,8 @@ class SemRel:
     ) -> "SemRel":
         """Modify the Semantic Release config file (.releaserc.json) for testing purposes."""
         contents = json.loads(await file.contents())
+
+        print(contents)
 
         if branch:
             if "release" in contents:
