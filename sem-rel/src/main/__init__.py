@@ -70,6 +70,7 @@ class SemRel:
                 )
 
         self.config = json.dumps(contents)
+        print(self.config)
         return self
 
     @function
