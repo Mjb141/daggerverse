@@ -86,6 +86,8 @@ class SemRel:
         env_var_key = "GH_TOKEN" if provider == "github" else "GL_TOKEN"
 
         if self.config:
+            print("Using modified config file:")
+            print(json.dumps(self.config, indent=4))
             dir = dir.without_file(".releaserc.json").with_new_file(
                 ".releaserc.json", self.config
             )
