@@ -57,8 +57,6 @@ class SemRel:
         """Modify the Semantic Release config file (.releaserc.json) for testing purposes."""
         contents = json.loads(await file.contents())
 
-        print(contents)
-
         if branch:
             if "release" in contents:
                 contents["release"]["branches"] = {"name": branch.strip()}
@@ -69,7 +67,7 @@ class SemRel:
                     "Branch: Neither 'release' nor 'branches' found at top-level in '.releaserc.json'"
                 )
 
-        self.config = contents
+        self.config = json.dumps(contents)
         return self
 
     @function
