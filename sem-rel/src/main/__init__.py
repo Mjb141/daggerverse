@@ -76,7 +76,7 @@ class SemRel:
         dir: dagger.Directory,
         provider: str,
         token: dagger.Secret,
-        check_if_ci: bool = True,
+        check_if_ci: bool = False,
         dry_run: bool = True,
     ) -> dagger.Container:
         """Returns a container that runs semantic-release on your branch."""
