@@ -92,6 +92,7 @@ class SemRel:
                 ".releaserc.json", self.config
             )
 
+        print("Running Semantic Release")
         return (
             dag.container()
             .from_("hoppr/semantic-release")
