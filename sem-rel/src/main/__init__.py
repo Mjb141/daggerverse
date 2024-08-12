@@ -13,10 +13,11 @@ rest is a long description with more detail on the module's purpose or usage,
 if appropriate. All modules should have a short description.
 """
 
-from typing import Annotated
 import dagger
 import json
+from datetime import datetime
 from dagger import dag, function, object_type, Doc
+from typing import Annotated
 
 # NOTE: it's recommended to move your code into other files in this package
 # and keep __init__.py for imports only, according to Python's convention.
@@ -96,6 +97,7 @@ class SemRel:
         return (
             dag.container()
             .from_("hoppr/semantic-release")
+            .with_env_variable("TIME", datetime.now().strftime("%H%M%S"))
             .with_secret_variable(env_var_key, token)
             .with_directory("/src", dir)
             .with_workdir("/src")
