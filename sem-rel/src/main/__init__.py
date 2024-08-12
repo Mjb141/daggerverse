@@ -28,7 +28,7 @@ from typing import Annotated
 def construct_cmd(check_if_ci: bool, dry_run: bool, branch: str | None = None):
     cmd = ["semantic-release"]
     if branch:
-        cmd = cmd + [f"--branches {branch}"]
+        cmd = cmd + [f"--branches main,{branch}"]
 
     if not check_if_ci:
         cmd = cmd + ["--no-ci"]
