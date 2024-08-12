@@ -84,7 +84,7 @@ class SemRel:
 
         if self.config:
             dir = dir.without_file(".releaserc.json").with_new_file(
-                ".releaserc.json", json.dumps(self.config)
+                ".releaserc.json", self.config
             )
 
         return (
