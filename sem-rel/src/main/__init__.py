@@ -59,8 +59,10 @@ class SemRel:
 
         if branch:
             if "release" in contents:
+                print(f"Adding {branch.strip()} to contents.release.branches")
                 contents["release"]["branches"] = {"name": branch.strip()}
             elif "branches" in contents:
+                print(f"Adding {branch.strip()} to contents.branches")
                 contents["branches"] = {"name": branch.strip()}
             else:
                 raise Exception(
