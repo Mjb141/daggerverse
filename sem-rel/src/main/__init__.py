@@ -85,7 +85,7 @@ class SemRel:
         """Returns a container that runs semantic-release on your branch."""
         env_var_key = "GH_TOKEN" if provider == "github" else "GL_TOKEN"
 
-        if self.config:
+        if self.config is not None:
             print("Using modified config file:")
             print(json.dumps(self.config, indent=4))
             dir = dir.without_file(".releaserc.json").with_new_file(
