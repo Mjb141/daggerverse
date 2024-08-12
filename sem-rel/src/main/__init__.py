@@ -14,7 +14,6 @@ if appropriate. All modules should have a short description.
 """
 
 import dagger
-import json
 from datetime import datetime
 from dagger import dag, function, object_type, Doc
 from typing import Annotated
@@ -26,8 +25,11 @@ from typing import Annotated
 # available to Dagger.
 
 
-def construct_cmd(check_if_ci: bool, dry_run: bool):
+def construct_cmd(check_if_ci: bool, dry_run: bool, branch: str | None = None):
     cmd = ["semantic-release"]
+    if branch:
+        cmd = cmd + [f"--branches {branch}"]
+
     if not check_if_ci:
         cmd = cmd + ["--no-ci"]
 
@@ -38,40 +40,21 @@ def construct_cmd(check_if_ci: bool, dry_run: bool):
 
 @object_type
 class SemRel:
-    config_file: Annotated[
-        dagger.File | None, Doc("Path to the .releaserc.json file.")
-    ] = None
-    config: str | None = None
+    branch: str | None = None
 
     @function
     async def with_config(
         self,
-        file: Annotated[
-            dagger.File | None,
-            Doc("[Required] The relative path to a .releaserc.json file."),
-        ] = None,
         branch: Annotated[
             str | None,
             Doc("[Optional] The branch you want to add to the release configuration."),
         ] = None,
     ) -> "SemRel":
         """Modify the Semantic Release config file (.releaserc.json) for testing purposes."""
-        contents = json.loads(await file.contents())
-
         if branch:
-            if "release" in contents:
-                print(f"Adding {branch.strip()} to contents.release.branches")
-                contents["release"]["branches"] = {"name": branch.strip()}
-            elif "branches" in contents:
-                print(f"Adding {branch.strip()} to contents.branches")
-                contents["branches"] = {"name": branch.strip()}
-            else:
-                raise Exception(
-                    "Branch: Neither 'release' nor 'branches' found at top-level in '.releaserc.json'"
-                )
+            print(f"Adding {branch.strip()} to branches CLI argument")
+            self.branch = branch.strip()
 
-        self.config = json.dumps(contents)
-        print(self.config)
         return self
 
     @function
@@ -86,14 +69,9 @@ class SemRel:
         """Returns a container that runs semantic-release on your branch."""
         env_var_key = "GH_TOKEN" if provider == "github" else "GL_TOKEN"
 
-        if self.config is not None:
-            print("Using modified config file:")
-            print(json.dumps(self.config, indent=4))
-            dir = dir.without_file(".releaserc.json").with_new_file(
-                ".releaserc.json", self.config
-            )
+        cmd = construct_cmd(check_if_ci, dry_run, self.branch)
+        print(f"Executing Semantic Release with command:\n{cmd}")
 
-        print("Running Semantic Release")
         return (
             dag.container()
             .from_("hoppr/semantic-release")
@@ -101,5 +79,5 @@ class SemRel:
             .with_secret_variable(env_var_key, token)
             .with_directory("/src", dir)
             .with_workdir("/src")
-            .with_exec(construct_cmd(check_if_ci, dry_run))
+            .with_exec(cmd)
         )
