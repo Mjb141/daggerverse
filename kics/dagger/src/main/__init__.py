@@ -1,11 +1,16 @@
 import dagger
-from dagger import dag, function, object_type
+from dagger import dag, function, object_type, Doc
+from typing import Annotated
 
 
 @object_type
 class Kics:
     @function
-    def scan(self, dir: dagger.Directory) -> dagger.Container:
+    def scan(
+        self,
+        dir: Annotated[dagger.Directory, Doc("Directory to scan, relative to `pwd`")],
+    ):
+        """Scan a directory and contained subdirs with KICS default configuration."""
         return (
             dag.container()
             .from_("checkmarx/kics:latest")
