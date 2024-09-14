@@ -12,7 +12,7 @@ class EchoMod:
         return dag.container().from_("alpine:latest")
 
     @function
-    async def with_secret(
+    def with_secret(
         self,
         id: dagger.Secret,
         token: dagger.Secret,
