@@ -18,7 +18,7 @@ class EchoMod:
         secret: dagger.Secret,
         key: str,
         project_id: str,
-        env: str = "dev",
+        env: str,
     ) -> "EchoMod":
         """Fetch a secret from Infisical"""
         self.secret = dag.infisical(id, secret).get_secret(key, project_id, env)
