@@ -1,7 +1,9 @@
 [project]
 name = "main"
 version = "0.0.0"
-dependencies = []
+dependencies = [
+    "dagger-io>=0.13.0",
+]
 
 [build-system]
 requires = ["hatchling"]
