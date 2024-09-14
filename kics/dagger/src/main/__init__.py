@@ -9,7 +9,7 @@ class Kics:
     def scan(
         self,
         dir: Annotated[dagger.Directory, Doc("Directory to scan, relative to `pwd`")],
-    ):
+    ) -> dagger.Container:
         """Scan a directory and contained subdirs with KICS default configuration."""
         return (
             dag.container()
