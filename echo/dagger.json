@@ -4,9 +4,9 @@
   "dependencies": [
     {
       "name": "infisical",
-      "source": "github.com/jpadams/daggerverse/infisical@2588936e041960999462b469ce7b8ef5504fc2eb"
+      "source": "github.com/NunoFrRibeiro/daggerverse/infisical@b513c4b32694a85d0e085b92baf818102d3afb37"
     }
   ],
   "source": ".",
-  "engineVersion": "v0.9.10"
+  "engineVersion": "v0.12.7"
 }

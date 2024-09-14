@@ -14,13 +14,14 @@ class EchoMod:
     @function
     async def with_secret(
         self,
-        name: str,
-        token: dagger.Secret,
+        id: dagger.Secret,
+        secret: dagger.Secret,
+        key: str,
+        project_id: str,
         env: str = "dev",
-        path: str = "/",
     ) -> "EchoMod":
         """Fetch a secret from Infisical"""
-        self.secret = dag.infisical().get_secret(name, token, env, path)
+        self.secret = dag.infisical(id, secret).get_secret(key, project_id, env)
         return self
 
     @function
