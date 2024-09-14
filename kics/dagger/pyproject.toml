@@ -1,11 +1,8 @@
 [project]
 name = "main"
 version = "0.0.0"
-dependencies = []
-
-[tool.uv]
-dev-dependencies = [
-    "dagger-io==0.12.7",
+dependencies = [
+    "dagger-io>=0.12.7",
 ]
 
 [build-system]
