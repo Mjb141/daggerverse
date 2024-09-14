@@ -2,7 +2,7 @@
 name = "main"
 version = "0.0.0"
 dependencies = [
-    "dagger-io>=0.13.0",
+    "dagger-io==0.12.7",
 ]
 
 [build-system]
