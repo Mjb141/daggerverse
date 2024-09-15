@@ -12,7 +12,7 @@ class EchoMod:
         return dag.container().from_("alpine:latest")
 
     @function
-    def with_secret(
+    async def with_secret(
         self,
         auth_id: dagger.Secret,
         auth_secret: dagger.Secret,
@@ -22,7 +22,7 @@ class EchoMod:
         secret_path: str = "/",
     ) -> "EchoMod":
         """Fetch a secret from Infisical"""
-        self.secret = (
+        inf_secret = (
             dag.infisical()
             .with_universal_auth(auth_id, auth_secret)
             .get_secret_by_name(
@@ -32,6 +32,8 @@ class EchoMod:
                 secret_name=secret_name,
             )
         )
+        print(await inf_secret.plaintext())
+        self.secret = inf_secret
         return self
 
     @function
