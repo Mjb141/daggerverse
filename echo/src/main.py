@@ -17,13 +17,13 @@ class EchoMod:
         auth_id: dagger.Secret,
         auth_secret: dagger.Secret,
         secret_name: str,
+        secret_path: str,
         project_id: str,
-        path: str,
         env: str,
     ) -> "EchoMod":
         """Fetch a secret from Infisical"""
         self.secret = dag.infisical(auth_id, auth_secret).get_secret(
-            secret_name, project_id, env, secret_path=path
+            secret_name, project_id, env, secret_path=secret_path
         )
         return self
 
