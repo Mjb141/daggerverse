@@ -25,7 +25,12 @@ class EchoMod:
         self.secret = (
             dag.infisical()
             .with_universal_auth(auth_id, auth_secret)
-            .get_secret_by_name(secret_name, project_id, env, secret_path)
+            .get_secret_by_name(
+                project_id=project_id,
+                environment_slug=env,
+                secret_path=secret_path,
+                secret_name=secret_name,
+            )
         )
         return self
 
