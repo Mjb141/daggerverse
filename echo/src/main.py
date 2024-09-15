@@ -17,9 +17,9 @@ class EchoMod:
         auth_id: dagger.Secret,
         auth_secret: dagger.Secret,
         secret_name: str,
-        secret_path: str,
         project_id: str,
         env: str,
+        secret_path: str = "/",
     ) -> "EchoMod":
         """Fetch a secret from Infisical"""
         self.secret = (
