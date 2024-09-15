@@ -22,8 +22,10 @@ class EchoMod:
         env: str,
     ) -> "EchoMod":
         """Fetch a secret from Infisical"""
-        self.secret = dag.infisical(auth_id, auth_secret).get_secret(
-            secret_name, project_id, env, secret_path=secret_path
+        self.secret = (
+            dag.infisical()
+            .with_universal_auth(auth_id, auth_secret)
+            .get_secret_by_name(secret_name, project_id, env, secret_path)
         )
         return self
 
