@@ -6,7 +6,7 @@ from dagger import dag, function, object_type
 class EchoMod:
     """This module will just echo a value from another module"""
 
-    secret: dagger.Secret | None = None
+    secret: dagger.Secret | None = dagger.field(default=None)
 
     def container(self) -> dagger.Container:
         return dag.container().from_("alpine:latest")
