@@ -4,7 +4,7 @@
   "dependencies": [
     {
       "name": "infisical",
-      "source": "github.com/jpadams/infisical-dagger@d8b16f19e7e65f32fd01dd81b01aa6dd10be0e33"
+      "source": "github.com/Infisical/infisical-dagger@98042321db6b3995f2f0d874c61990c3c73d7d30"
     }
   ],
   "source": ".",
